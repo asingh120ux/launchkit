@@ -1,0 +1,6 @@
+pyyaml
+requests
+python-dotenv
+pillow
+google-ads==32.0.0
+pytest

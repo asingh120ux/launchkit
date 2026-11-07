@@ -1,0 +1,276 @@
+# launchkit plan: next month's paid build for a B2B SaaS trial funnel.
+# One file = the whole account. Change this, re-run launchkit, get PAUSED campaigns ready to launch.
+# Every budget is USD per day. Monthly = daily x 30.
+
+account:
+  label: "B2B SaaS (agentic SEO platform), trial-signup objective"
+  month: "2026-11"
+  landing_url: "https://searchatlas.com/"          # the trial page; Google rejects placeholder domains at ad creation
+  total_monthly_budget: 120000
+  cpa_target: [250, 280]
+  source_of_truth: "PostHog trial signups by utm_source, reconciled weekly against platform-reported trials"
+
+# ---------------------------------------------------------------------------
+# META: $65,000 / month = $2,150 / day across 3 campaigns
+# ---------------------------------------------------------------------------
+meta:
+  monthly_budget: 65000
+  pixel_event: START_TRIAL        # fired on trial-complete, browser pixel + server-side (CAPI)
+  countries: [US]
+  campaigns:
+
+    - name: "Prospecting - Advantage+ - Trial"
+      objective: OUTCOME_SALES
+      daily_budget: 1400           # $42k / month, 65% of Meta
+      why: >
+        The engine. $74.6k spend, 298 trials, $250 CPA over 9 weeks, $164-257 by week before
+        tracking broke on 09-22. Keeps the budget it had plus the retargeting cut.
+      ad_sets:
+        - name: "A+ Audience - US - 25+"
+          optimization_goal: OFFSITE_CONVERSIONS
+          bid_strategy: LOWEST_COST_WITHOUT_CAP     # switch to COST_CAP 280 once PostHog and Meta agree within 15%
+          targeting:
+            age: [25, 55]
+            advantage_audience: true
+          ads:
+            - Demo_Screen_Walkthrough
+            - UGC_Agency_Owner
+            - UGC_Founder_v3_hook_A
+            - UGC_Founder_v3_hook_B
+
+    - name: "Prospecting - Creative Test"
+      objective: OUTCOME_SALES
+      daily_budget: 450            # $13.5k / month, 21% of Meta
+      why: >
+        The old Prospecting_Broad ran $328 CPA, above target, so it stops being a second prospecting
+        campaign and becomes the place new concepts earn their way into Advantage+. Two ad sets so a
+        concept is read against the same audience twice.
+      ad_sets:
+        - name: "Test - Broad - US - 25-55"
+          optimization_goal: OFFSITE_CONVERSIONS
+          bid_strategy: LOWEST_COST_WITHOUT_CAP
+          targeting:
+            age: [25, 55]
+            advantage_audience: false
+          ads:
+            - Carousel_Case_Study
+            - Static_AgentStack_Benefits_v2
+        - name: "Test - Agency Owners - US - 25-55"
+          optimization_goal: OFFSITE_CONVERSIONS
+          bid_strategy: LOWEST_COST_WITHOUT_CAP
+          targeting:
+            age: [25, 55]
+            advantage_audience: false
+            interests: ["Search engine optimization", "Digital marketing", "Online advertising"]
+          ads:
+            - Carousel_Case_Study
+            - Static_AgentStack_Benefits_v2
+
+    - name: "Retargeting - 14d"
+      objective: OUTCOME_SALES
+      daily_budget: 300            # $9k / month, 14% of Meta
+      why: >
+        Retargeting_30d was $433 CPA for the period and went to zero trials after the window was
+        widened from 14 to 30 days on 09-08. Back to 14 days, trial starters excluded, one fresh
+        creative pair instead of a testimonial that launched in May. Budget cut from $320 to $300 / day.
+      ad_sets:
+        - name: "RT - Site visitors 14d - excl. trials 90d"
+          optimization_goal: OFFSITE_CONVERSIONS
+          bid_strategy: LOWEST_COST_WITHOUT_CAP
+          targeting:
+            age: [25, 55]
+            advantage_audience: false
+            include_audiences:
+              - { name: "Site visitors 14d", type: website_visitors, retention_days: 14 }
+            exclude_audiences:
+              - { name: "Trial starters 90d", type: website_event, event: START_TRIAL, retention_days: 90 }
+          ads:
+            - Retargeting_Testimonial_v2
+            - Retargeting_Annual_Plan
+
+  # Ad library. Each ad = one creative file + copy. Primary text stays under 125 characters so
+  # nothing hides behind "See more". Images are placeholders in /creative until real assets land.
+  ads:
+    Demo_Screen_Walkthrough:
+      format: image
+      file: creative/demo_1080x1080.png
+      primary_text: "Watch the agent run a full SEO audit, fix the pages, and report back. 2 minutes, no setup."
+      headline: "See the agent work"
+      cta: SIGN_UP
+      note: "Keep. $247 average CPA in the clean weeks, steady, 2nd biggest trial source."
+    UGC_Agency_Owner:
+      format: image
+      file: creative/ugc_agency_1080x1350.png
+      primary_text: "An agency owner on moving 40 client sites to agentic SEO. What changed, what did not."
+      headline: "40 sites, one agent"
+      cta: SIGN_UP
+      note: "Keep, watch. $148-320 CPA week to week; needs 2 weeks of clean tracking before a verdict."
+    UGC_Founder_v3_hook_A:
+      format: image
+      file: creative/founder_a_1080x1350.png
+      primary_text: "I built this because I was tired of paying for SEO reports nobody acted on."
+      headline: "SEO that does the work"
+      cta: SIGN_UP
+      note: "Relaunch of the best concept in the account (UGC_Founder_v2, $175-225 CPA, 28% of Meta trials, paused 09-19 at frequency 3.85). New hook, same angle."
+    UGC_Founder_v3_hook_B:
+      format: image
+      file: creative/founder_b_1080x1350.png
+      primary_text: "Your SEO agency sends a deck. Ours ships the fixes. Start a trial and compare."
+      headline: "Deck vs. done"
+      cta: SIGN_UP
+      note: "Second hook on the same concept so one creative is not the whole bet."
+    Carousel_Case_Study:
+      format: image
+      file: creative/case_study_1080x1080.png
+      primary_text: "One SaaS, 90 days, organic trials up 3x. Here is the exact playbook the agent ran."
+      headline: "The 90-day playbook"
+      cta: LEARN_MORE
+      note: "Test. $300-380 CPA in its first 2 weeks, then tracking broke. Not proven, not dead."
+    Static_AgentStack_Benefits_v2:
+      format: image
+      file: creative/benefits_1080x1080.png
+      primary_text: "Audit, fix, publish, report. Four agents, one login, no agency retainer."
+      headline: "Four agents. One login."
+      cta: SIGN_UP
+      note: "Refresh of Static_AgentStack_Benefits ($243 average CPA pre-break, frequency 2.08 and climbing)."
+    Retargeting_Testimonial_v2:
+      format: image
+      file: creative/testimonial_1080x1080.png
+      primary_text: "\"We cancelled two retainers in month one.\" Head of Growth, Series B SaaS. Free trial."
+      headline: "Two retainers, cancelled"
+      cta: SIGN_UP
+      note: "Replaces a testimonial from May. Fresh quote, same proof type."
+    Retargeting_Annual_Plan:
+      format: image
+      file: creative/annual_1080x1080.png
+      primary_text: "You looked. Now the annual plan is live: 2 months free when you start this week."
+      headline: "Annual plan: 2 months free"
+      cta: SIGN_UP
+      note: "Uses the annual toggle that shipped 09-29. Only shown to people who already visited."
+
+# ---------------------------------------------------------------------------
+# GOOGLE: $55,000 / month = $1,830 / day across 3 campaigns, no shared budget
+# ---------------------------------------------------------------------------
+google:
+  monthly_budget: 55000
+  country: US                    # geo target constant 2840
+  language: en                   # language constant 1000
+  conversion_action: "Trial Signup"
+  campaigns:
+
+    - name: "Search_Brand_US"
+      type: SEARCH
+      daily_budget: 280            # $8.4k / month, 15% of Google
+      bidding:
+        strategy: TARGET_IMPRESSION_SHARE
+        location: ANYWHERE_ON_PAGE
+        impression_share: 0.90
+        max_cpc: 3.00
+      why: >
+        $154 CPA, 18% CTR, $1.69 CPC. Cheapest trials in the account but partly demand that organic
+        would have caught. Own budget so it can never be starved again, capped so it cannot grow.
+      negatives: [jobs, careers, login, salary, free, course, tutorial]
+      ad_groups:
+        - name: "Brand - Core"
+          keywords:
+            - { text: "search atlas", match: EXACT }
+            - { text: "searchatlas", match: EXACT }
+            - { text: "search atlas seo", match: PHRASE }
+            - { text: "search atlas pricing", match: PHRASE }
+            - { text: "search atlas reviews", match: PHRASE }
+          ads:
+            - headlines: ["Search Atlas | Official Site", "Agentic SEO Platform", "Start Your Free Trial", "Audit, Fix, Publish, Report", "Built For Agencies And Teams", "No Credit Card To Start"]
+              descriptions: ["AI agents that audit your site, ship the fixes and report back. Try it free.", "Replace the SEO retainer with agents that do the work. Free trial, cancel any time."]
+
+    - name: "Search_NonBrand_US"
+      type: SEARCH
+      daily_budget: 1050           # $31.5k / month, 57% of Google
+      bidding:
+        strategy: MAXIMIZE_CONVERSIONS
+        target_cpa: null           # set to 270 after 30 conversions in 30 days on clean tracking
+      why: >
+        $310 CPA, $240-376 by week before the UK campaign starved it. Biggest trial source on Google
+        (143) and the one with headroom: own budget, intent-themed ad groups, the 40 negatives from
+        10-06 kept and extended, weekly search-term review.
+      negatives: [jobs, careers, login, salary, free, course, tutorial, "what is", definition, wordpress plugin, reddit]
+      ad_groups:
+        - name: "AI SEO Software"
+          keywords:
+            - { text: "ai seo software", match: PHRASE }
+            - { text: "ai seo tool", match: PHRASE }
+            - { text: "ai seo platform", match: PHRASE }
+            - { text: "best ai seo software", match: EXACT }
+            - { text: "seo ai agent", match: PHRASE }
+          ads:
+            - headlines: ["AI SEO Software That Ships", "Agents Audit, Fix And Publish", "Free Trial, No Card", "Built For Agencies", "Replace The Retainer", "See It Run In 2 Minutes"]
+              descriptions: ["AI agents that audit your site, fix the pages and report back. Start free.", "Stop paying for SEO reports nobody acts on. Agents do the work. Free trial."]
+        - name: "SEO Automation"
+          keywords:
+            - { text: "seo automation software", match: PHRASE }
+            - { text: "automate seo", match: PHRASE }
+            - { text: "automated seo platform", match: PHRASE }
+            - { text: "agentic seo", match: PHRASE }
+            - { text: "seo workflow automation", match: PHRASE }
+          ads:
+            - headlines: ["Automate SEO End To End", "Agents Audit, Fix, Publish", "Free Trial, No Card", "One Login, Four Agents", "Built For Agencies", "See It Run In 2 Minutes"]
+              descriptions: ["Technical fixes, content, links and reporting, run by agents. Start free.", "Four SEO agents under one login. No retainer, no handoffs. Free trial."]
+        - name: "Competitor Alternatives"
+          keywords:
+            - { text: "semrush alternative", match: PHRASE }
+            - { text: "ahrefs alternative", match: PHRASE }
+            - { text: "surfer seo alternative", match: PHRASE }
+            - { text: "seo agency alternative", match: PHRASE }
+          ads:
+            - headlines: ["The Alternative That Ships", "Audit, Fix, Publish, Report", "Free Trial, No Card", "Agents, Not Dashboards", "Built For Agencies", "Switch In An Afternoon"]
+              descriptions: ["Dashboards show you the problem. Our agents fix it. Compare on a free trial.", "Everything your SEO stack reports on, done for you by agents. Start free."]
+        - name: "Agency SEO Tools"
+          keywords:
+            - { text: "seo tools for agencies", match: PHRASE }
+            - { text: "agency seo software", match: PHRASE }
+            - { text: "white label seo platform", match: PHRASE }
+            - { text: "seo software for agencies", match: PHRASE }
+          ads:
+            - headlines: ["SEO Software For Agencies", "Run 40 Client Sites On Agents", "Free Trial, No Card", "White Label Reports Built In", "Audit, Fix, Publish, Report", "See It Run In 2 Minutes"]
+              descriptions: ["Agents that audit, fix and report across every client site. Start free.", "Scale client SEO without scaling headcount. Agents do the work. Free trial."]
+
+    - name: "PMax_US"
+      type: PERFORMANCE_MAX
+      daily_budget: 500            # $15k / month, 27% of Google
+      bidding:
+        strategy: MAXIMIZE_CONVERSIONS
+        target_cpa: 270
+      brand_exclusions: ["search atlas", "searchatlas"]
+      why: >
+        $338 CPA on a shared budget with no brand exclusion, so part of that was brand demand it
+        claimed. Rebuilt with brand excluded, a target CPA inside the range, and an asset group per
+        buyer so the signal is not one blended pile.
+      asset_groups:
+        - name: "Agency Owners"
+          final_url: "https://searchatlas.com/"
+          headlines: ["Run Client SEO With Agents", "Audit, Fix, Publish, Report", "Free Trial, No Card"]
+          long_headline: "SEO agents that audit, fix and report across every client site"
+          descriptions: ["Scale client SEO without scaling headcount.", "Agents do the work. You keep the margin."]
+          business_name: "Search Atlas"
+          images:
+            landscape: creative/pmax_landscape_1200x628.png
+            square: creative/pmax_square_1200x1200.png
+          logo: creative/logo_1200x1200.png
+        - name: "In-house SEO"
+          final_url: "https://searchatlas.com/"
+          headlines: ["Your SEO Team, Plus Agents", "Fixes Shipped, Not Reported", "Free Trial, No Card"]
+          long_headline: "AI agents that audit your site, ship the fixes and report back"
+          descriptions: ["Technical, content, links and reporting in one login.", "Stop paying for reports nobody acts on."]
+          business_name: "Search Atlas"
+          images:
+            landscape: creative/pmax_landscape_1200x628.png
+            square: creative/pmax_square_1200x1200.png
+          logo: creative/logo_1200x1200.png
+
+    - name: "Search_NonBrand_UK"
+      type: SEARCH
+      daily_budget: 0
+      status: CUT
+      why: >
+        $15.1k spent in 4 weeks, 0 conversions, 4.5% CTR so the ads got clicks that never became
+        trials. Sat on the shared $1,800 / day budget and pulled US spend down 30%. Not rebuilt.
+        Comes back only with its own budget, a UK landing page and a reason to believe UK converts.
